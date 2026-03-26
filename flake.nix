@@ -34,13 +34,7 @@
          };
       in
       rec {
-         overlays = {
-            default = final: prev: {
-               kathara = self.packages.${prev.system}.default;
-            };
-         };
-
-         packages.${system}.default = pkgs.buildFHSEnv {
+         packages.default = pkgs.buildFHSEnv {
             name = "kathara";
             targetPkgs = pkgs: [ kathara ];
             multiPkgs = pkgs: [ pkgs.dpkg ];
@@ -49,8 +43,13 @@
 
          devShells.default = pkgs.mkShell {
             name = "Kathara";
-            buildInputs = [ packages.${system}.default ];
+            buildInputs = [ packages.default ];
          };
-      }
-   );
+      }) // {
+      overlays = {
+         default = final: prev: {
+            kathara = self.packages.${prev.system}.default;
+         };
+      };
+   };
 }
